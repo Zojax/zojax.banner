@@ -1,0 +1,20 @@
+<div class="z-portlet portlet-banner" tal:condition="context/decoration">
+
+  <h2 class="z-portlet-header"
+      tal:condition="context/label"
+      tal:content="context/label">Portlet Header</h2>
+
+  <div class="z-portlet-body">
+    <div class="z-portlet-item">
+      <tal:block tal:repeat="banner context/banners">
+        <tal:block content="structure banner/@@pagelet/banner.banner.sponsorview" />
+      </tal:block>
+    </div>
+  </div>
+</div>
+
+<div tal:condition="not:context/decoration">
+  <tal:block tal:repeat="banner context/banners">
+    <tal:block content="structure banner/@@pagelet/banner.banner.sponsorview" />
+  </tal:block>
+</div>

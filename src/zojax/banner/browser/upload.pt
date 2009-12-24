@@ -1,0 +1,20 @@
+<div i18n:domain="zojax.banner">
+  <h1 i18n:translate="">Batch uploads</h1>
+  <div class="z-page-description"></div>
+
+  <div class="z-form-fieldset">
+    <div class="z-form-field">
+      <label for="file_file" i18n:translate="">Select file</label>
+      <div class="z-form-help" i18n:translate="">You can upload archive file.</div>
+      <div>
+         <input size="30" id="file_file" name="file_file" type="file" />
+      </div>
+    </div>
+  </div>
+
+  <div class="z-form-controls">
+    <hr />
+    <input class="z-form-addbutton" type="submit" value="Upload"
+     name="form.upload" i18n:attributes="value"/>
+  </div>
+</div>
