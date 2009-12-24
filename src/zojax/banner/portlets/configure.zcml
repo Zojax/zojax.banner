@@ -1,0 +1,31 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zojax.banner">
+
+  <!-- banner -->
+  <zojax:portlet
+     title="Banner"
+     name="portlets.banner"
+     schema=".interfaces.IBannerPortlet"
+     class=".banner.BannerPortlet" />
+
+  <zojax:pagelet
+     type="portlet.view"
+     template="banner.pt"
+     for=".banner.BannerPortlet" />
+
+  <!-- banner -->
+  <zojax:portlet
+     title="Sponsors"
+     name="portlets.sponsors"
+     schema=".interfaces.ISponsorsPortlet"
+     class=".sponsors.SponsorsPortlet" />
+
+  <zojax:pagelet
+     type="portlet.view"
+     template="sponsors.pt"
+     for=".sponsors.SponsorsPortlet" />
+
+</configure>

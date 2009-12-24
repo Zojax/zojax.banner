@@ -1,0 +1,3 @@
+<tal:block repeat="banner view/banners"
+       tal:content="structure banner/@@smartbannerview"
+/>

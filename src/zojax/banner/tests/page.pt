@@ -1,0 +1,2 @@
+<tal:block tal:define="banner context/++resource++zojax-banners/place/select"
+           tal:content="structure banner/@@pagelet/banner.banner.view" />

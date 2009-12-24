@@ -1,0 +1,16 @@
+<div class="z-form-fieldset" i18n:domain="zojax.banner">
+  <div>
+    <div class="uppercase" i18n:translate="">Banner:</div>
+    <div class="z-form-help" i18n:translate="">Banner shown in banner place</div>
+    <div class="second"
+       tal:content="structure context/@@pagelet/banner.banner.view">
+    </div>
+  </div>
+
+  <div>
+    <div class="uppercase" i18n:translate="">Sponsor's item:</div>
+    <div class="z-form-help" i18n:translate="">Banner shown in sponsors portlet</div>
+    <p class="second" tal:content="structure context/@@pagelet/banner.banner.sponsorview" />
+  </div>
+
+</div>

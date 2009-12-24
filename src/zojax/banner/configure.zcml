@@ -1,0 +1,144 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:i18n="http://namespaces.zope.org/i18n"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.banner">
+
+  <!-- configlet -->
+  <zojax:configlet
+     name="ui.banners"
+     title="Site Banners"
+     description="Banners configlet for general purpose configuration."
+     class=".configlet.Banners"
+     schema=".interfaces.IBanners">
+
+    <require
+       permission="zope.Public"
+       interface="zojax.content.type.interfaces.IItem
+		  zope.app.container.interfaces.IReadContainer" />
+
+    <require
+       permission="zojax.Configure"
+       set_schema="zojax.content.type.interfaces.IItem"
+       interface="zope.app.container.interfaces.IWriteContainer" />
+  </zojax:configlet>
+
+  <!-- banners -->
+  <zojax:content
+     name="banner.banners"
+     title="Site Banners"
+     description="Banners configlet for general purpose configuration."
+     class=".configlet.Banners"
+     schema=".interfaces.IBanners"
+     contains="banner.bannerplace"
+     type="zojax.content.type.interfaces.IInactiveType" />
+
+  <class class=".configlet.Banners">
+    <implements interface="zojax.content.type.interfaces.IContainerContentsAware" />
+  </class>
+
+  <!-- modification info for resource -->
+  <adapter factory=".helpers.ModificationInfo" />
+
+  <!-- resources handler -->
+  <adapter
+     name="zojax-banners"
+     provides="zope.interface.Interface"
+     for="zope.publisher.interfaces.browser.IBrowserRequest"
+     factory=".publisher.ContainerBanners" />
+
+  <class class=".publisher.Banners">
+    <allow
+       attributes="__getitem__"
+       interface="zope.publisher.interfaces.browser.IBrowserPublisher" />
+  </class>
+
+  <class class=".publisher.ContainerBanners">
+    <allow
+       attributes="__getitem__"
+       interface="zope.publisher.interfaces.browser.IBrowserPublisher" />
+  </class>
+
+  <class class=".publisher.BannerWrapper">
+    <allow
+       attributes="GET HEAD __call__"
+       interface="zope.publisher.interfaces.browser.IBrowserPublisher" />
+  </class>
+
+  <!-- banner -->
+  <zojax:content
+     name="banner.banner"
+     title="Banner"
+     description="Banner for general purpose"
+     class=".banner.Banner"
+     schema=".interfaces.IBanner"
+     containers="banner.bannerplace" />
+
+  <class class=".banner.Banner">
+    <implements interface="zope.annotation.interfaces.IAttributeAnnotatable" />
+
+    <allow interface=".interfaces.IBanner" />
+
+    <require
+       permission="zojax.Configure"
+       set_schema=".interfaces.IBanner" />
+  </class>
+
+  <adapter
+     for=".interfaces.IBanner"
+     factory="zojax.cacheheaders.staticcache.getStaticCache" />
+
+  <subscriber handler=".banner.bannerCopiedEvent" />
+
+  <!-- banner place -->
+  <zojax:content
+     schema=".interfaces.IBannerPlace"
+     name="banner.bannerplace"
+     title="Banners"
+     description="Banners container"
+     class=".place.BannerPlace"
+     containers="banner.banners"
+     contains="banner.banner" />
+
+  <class class=".place.BannerPlace">
+    <implements interface="zope.annotation.interfaces.IAttributeAnnotatable" />
+    <implements interface="zojax.content.type.interfaces.IContainerContentsAware" />
+
+    <require
+       permission="zope.View"
+       interface=".interfaces.IBannerPlace
+		  zope.app.container.interfaces.IReadContainer" />
+    <require
+       permission="zojax.Configure"
+       set_schema=".interfaces.IBannerPlace"
+       interface="zope.app.container.interfaces.IWriteContainer" />
+  </class>
+
+  <utility
+     name="zojax.banner.algorithms"
+     provides="zope.schema.interfaces.IVocabularyFactory"
+     component=".vocabulary.BannerAlgorithmsVocabulary" />
+
+  <utility
+     name="zojax.banner.places"
+     provides="zope.schema.interfaces.IVocabularyFactory"
+     component=".vocabulary.BannerPlacesVocabulary" />
+
+  <adapter
+     name="Round"
+     factory=".banneralgorithm.BannerAlgorithmRound" />
+
+  <adapter
+     name="Random"
+     factory=".banneralgorithm.BannerAlgorithmRandom" />
+
+  <!-- browser views -->
+  <include package=".browser" />
+
+  <!-- portlets -->
+  <include package=".portlets" />
+
+  <!-- translations -->
+  <i18n:registerTranslations directory="locales"/>
+
+</configure>

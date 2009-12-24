@@ -1,0 +1,181 @@
+====================
+Persistent Resources
+====================
+
+    >>> import os.path
+    >>> from zope import component, interface
+    >>> from zope.testbrowser.testing import Browser
+    >>> from zope.app.testing.functional import getRootFolder
+    >>> from zope.app.component.hooks import setSite
+    >>> from zojax.banner.interfaces import IBanner, IBannerPlace, IBanners
+    >>> from zojax.banner.interfaces import IBanners
+
+    >>> root = getRootFolder()
+
+    >>> admin = Browser()
+    >>> admin.handleErrors = False
+    >>> admin.addHeader("Authorization", "Basic mgr:mgrpw")
+
+    >>> user = Browser()
+    >>> user.handleErrors = False
+    >>> user.open('http://localhost/@@/zojax-banners/')
+
+
+We can add banner places
+
+    >>> admin.open("http://localhost/settings/")
+    >>> admin.getLink('Banners').click()
+    >>> print admin.contents
+    <html>
+    ...
+    <a href="http://localhost/settings/ui/banners/+/banner.bannerplace/">Banners</a>
+    ...
+    </html>
+
+
+Banner place
+
+    >>> filePath = os.path.join(os.path.split(__file__)[0], 'default.jpg')
+    >>> admin.getLink(url='banner.bannerplace/').click()
+    >>> admin.getControl('Title').value = u'Banner Place'
+    >>> admin.getControl('Description').value = u'Some Banner Place'
+    >>> fileControl = admin.getControl('Default banner').mech_control
+    >>> fileControl.add_file(open(filePath), filename='default.jpg')
+    >>> admin.getControl('Content short name').value = 'place'
+    >>> admin.getControl(name='content.add.buttons.add').click()
+    >>> print admin.contents
+    <html>
+    ...
+    <h1 class="z-content-title">Banner Place</h1>
+    ...
+    Contents
+    ...
+    <div class="z-table-emtpy">There are no items in this container.</div>
+    ...
+    </html>
+
+
+We can see banner code (default)
+
+    >>> user.open('http://localhost/page.html')
+    >>> print user.contents
+    <html>
+    ...
+    ...<img src="http://localhost/@@/zojax-banners/place" />...
+    ...
+    </html>
+
+
+Banner portlet  (with default banner)
+
+    >>> user.open('http://localhost/portlet.html')
+    >>> print user.contents
+    <html>
+    ...
+    ...<div class="z-portlet portlet-banner">
+      <h2 class="z-portlet-header">Banner</h2>
+      <div class="z-portlet-body">
+        <div class="z-portlet-item">
+          <img src="http://localhost/@@/zojax-banners/place" />
+        </div>
+    </div>
+    ...
+    </html>
+
+We add banner to banner place
+
+    >>> filePath = os.path.join(os.path.split(__file__)[0], 'image.jpg')
+    >>> admin.open('http://localhost/settings/ui/banners/place')
+    >>> admin.getLink('Banner', url="+").click()
+    >>> admin.getControl('Title').value = u'Some Banner'
+    >>> admin.getControl('Target URL').value = "http://www.google.com"
+    >>> admin.getControl('Alternative text').value = "Google"
+    >>> fileControl = admin.getControl('Logo').mech_control
+    >>> fileControl.add_file(open(filePath), filename='image.jpg')
+    >>> fileControl = admin.getControl('Data').mech_control
+    >>> fileControl.add_file(open(filePath), filename='image.jpg')
+    >>> admin.getControl('Content short name').value = 'banner'
+    >>> admin.getControl(name='content.add.buttons.add').click()
+
+Access banner in banner place
+
+    >>> user.open('http://localhost/@@/zojax-banners/place/banner')
+
+We can see banner code
+
+    >>> user.open('http://localhost/page.html')
+    >>> print user.contents
+    <html>
+    ...
+    ...<a href="http://www.google.com" title="Google"><img src="http://localhost/@@/zojax-banners/place/banner" alt="Google"/></a>...
+    ...
+    </html>
+
+
+Banner portlet
+
+    >>> user.open('http://localhost/portlet.html')
+    >>> print user.contents
+    <html>
+    ...
+    ...<div class="z-portlet portlet-banner">
+      <h2 class="z-portlet-header">Banner</h2>
+      <div class="z-portlet-body">
+        <div class="z-portlet-item">
+          <a href="http://www.google.com" title="Google"><img src="http://localhost/@@/zojax-banners/place/banner" alt="Google"/></a>...
+        </div>
+    </div>
+    ...
+    </html>
+
+Sponsors portlet
+
+    >>> user.open('http://localhost/sponsorportlet.html')
+    >>> print user.contents
+    <html>
+    ...
+    ...<div class="z-portlet portlet-banner">
+    <h2 class="z-portlet-header">Sponsors</h2>
+    <div class="z-portlet-body">
+    <div class="z-portlet-item">
+    <a href="http://www.google.com" title="Google"><img src="http://localhost/@@/zojax-banners/place/banner/logo" alt="Google"/></a>
+    </div>
+    </div>
+    ...
+    </html>
+
+Banner has time and date checks
+
+    >>> admin.open('http://localhost/settings/ui/banners/place/banner/context.html/content')
+    >>> admin.getControl('Begin time').value = '00:00:00'
+    >>> admin.getControl('End time').value = '23:59:59'
+    >>> admin.getControl('Banner show begin date').value = '01/10/01'
+    >>> admin.getControl('Banner show end date').value = '20/10/20'
+    >>> admin.getControl('Save').click()
+
+We can see banner code
+
+    >>> user.open('http://localhost/page.html')
+    >>> print user.contents
+    <html>
+    ...
+    ...<a href="http://www.google.com" title="Google"><img src="http://localhost/@@/zojax-banners/place/banner" alt="Google"/></a>...
+    ...
+    </html>
+
+
+Upload
+
+    >>> admin.open("http://localhost/settings/ui/banners/place/")
+    >>> admin.getLink('Upload').click()
+    >>> filePath = os.path.join(os.path.split(__file__)[0], 'test.tar.gz')
+    >>> fileControl = admin.getControl('Select file').mech_control
+    >>> fileControl.add_file(open(filePath), filename='test.tar.gz')
+    >>> admin.getControl(name='form.upload').click()
+
+    >>> print admin.contents
+    <html>
+    ...<input type="checkbox" name="ids:list" value="image.jpg" />...
+    </html>
+
+
